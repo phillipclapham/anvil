@@ -2,7 +2,7 @@
 
 **Local-model iterative problem-solving harness with an immune system.**
 
-Anvil wraps a small local LLM in an iteration loop instrumented by [anneal-memory](https://github.com/phillipclapham/anneal-memory)'s two-layer memory (episodic + continuity). The model generates. The harness consolidates, validates, and decays. The immune system prevents the mem0-style context pollution that kills every other sustained-iteration loop.
+Anvil wraps a small local LLM in an iteration loop instrumented by [anneal-memory](https://github.com/phillipclapham/anneal-memory)'s **four-layer memory**: an episodic store for raw attempts, a continuity file for compressed graduated patterns, Hebbian associations that strengthen cross-episode links under semantic judgment, and an affective limbic layer that weights what matters during consolidation. The model generates. The harness consolidates, validates, and decays. The immune system prevents the mem0-style context pollution that kills every other sustained-iteration loop.
 
 In one sentence: **anneal-memory turns a local ~4B model into a patient, self-correcting problem solver that doesn't forget what it tried, doesn't repeat failed approaches, and consolidates insights as it goes.**
 
@@ -122,7 +122,7 @@ Full forensic: [`results/bug_01_baseline.md`](results/bug_01_baseline.md).
 
 ## Related work
 
-- **[anneal-memory](https://github.com/phillipclapham/anneal-memory)** — two-layer memory (episodic + continuity) with an immune system (citation-validated graduation, active principle demotion, anti-inbreeding). Anvil's memory layer AND primary dogfood benchmark (Anvil uses anneal-memory to run on anneal-memory's own bug history).
+- **[anneal-memory](https://github.com/phillipclapham/anneal-memory)** — four-layer memory (episodic store + continuity file + Hebbian associations + limbic affect) with an immune system (citation-validated graduation, active principle demotion, anti-inbreeding). Anvil's memory layer AND primary dogfood benchmark (Anvil uses anneal-memory to run on anneal-memory's own bug history).
 - **Agent identity research paper** — work in progress. The theoretical frame this project is empirically testing.
 
 ## License
