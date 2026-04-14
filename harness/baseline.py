@@ -89,22 +89,35 @@ def reset_repo(repo: Path) -> None:
 
 
 def reintroduce_bug(bug: dict, repo: Path) -> bool:
-    """Apply the bug-reintroduction find/replace to the source file.
+    """Apply the bug-reintroduction find/replace(s) to the source file.
 
-    Returns True if the replacement was made, False if the `find` string
-    wasn't present (indicates stale config or repo drift).
+    ``bug_reintroduction`` may be:
+    - a single ``{find, replace}`` dict (single-site bug, like Bug 1), or
+    - a list of ``{find, replace}`` dicts (multi-site bug, like Bugs 4 and 5
+      where the fix touched several locations that must all be reverted
+      together to reintroduce the original failure mode).
+
+    All edits must succeed or the function returns False (partial
+    reintroductions produce misleading benchmark data). Edits are applied
+    in order against the same source file.
+
+    Returns True if every edit was made, False if any ``find`` string was
+    missing (indicates stale config or repo drift).
     """
     src_path = repo / bug["source_file"]
     content = src_path.read_text()
 
-    find = bug["bug_reintroduction"]["find"]
-    replace = bug["bug_reintroduction"]["replace"]
+    reintro = bug["bug_reintroduction"]
+    edits = reintro if isinstance(reintro, list) else [reintro]
 
-    if find not in content:
-        return False
+    for edit in edits:
+        find = edit["find"]
+        replace = edit["replace"]
+        if find not in content:
+            return False
+        content = content.replace(find, replace, 1)
 
-    new_content = content.replace(find, replace, 1)
-    src_path.write_text(new_content)
+    src_path.write_text(content)
     return True
 
 
@@ -282,7 +295,7 @@ functions. No tests. Just the fixed method inside a python code block.
 # -- Ollama API call ----------------------------------------------------------
 
 
-def call_ollama(model: str, prompt: str, timeout: int = 300) -> dict[str, Any]:
+def call_ollama(model: str, prompt: str, timeout: int = 900) -> dict[str, Any]:
     """Call Ollama generate API. Returns the parsed JSON response."""
     body = json.dumps(
         {
